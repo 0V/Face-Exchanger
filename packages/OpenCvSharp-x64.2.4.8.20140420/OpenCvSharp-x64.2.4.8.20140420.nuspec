@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>OpenCvSharp-x64</id>
+    <version>2.4.8.20140420</version>
+    <title>OpenCvSharp x64</title>
+    <authors>shimat</authors>
+    <owners>shimat</owners>
+    <licenseUrl>http://www.gnu.org/licenses/lgpl-3.0.en.html</licenseUrl>
+    <projectUrl>https://github.com/shimat/opencvsharp</projectUrl>
+    <iconUrl>http://opencvsharp.googlecode.com/files/Lenna.ico</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>OpenCV wrapper for .NET Framework</description>
+    <releaseNotes>- Merged MachineLearning into CPlusPlus
+- Removed old Blob API</releaseNotes>
+    <copyright>Copyright 2008-2014</copyright>
+    <tags>Image Processing OpenCV Wrapper FFI</tags>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Drawing" targetFramework=".NETFramework2.0, .NETFramework3.5" />
+      <frameworkAssembly assemblyName="System.Windows.Forms" targetFramework=".NETFramework2.0, .NETFramework3.5" />
+      <frameworkAssembly assemblyName="PresentationCore" targetFramework=".NETFramework3.5" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework3.5" />
+      <frameworkAssembly assemblyName="WindowsBase" targetFramework=".NETFramework3.5" />
+    </frameworkAssemblies>
+  </metadata>
+</package>
