@@ -3,6 +3,7 @@ Fece-Exchanger
   
 ##概要  
 指定したファイルや、カメラから取り込んだ映像の顔の部分に他の画像を重ねる C# 製 WPF アプリケーションです。  
+画像処理ライブラリは [OpenCvSharp](http://schima.hatenablog.com/entry/2014/01/30/105406) を使用しています。
   
 ##使い方
   
