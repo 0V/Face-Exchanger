@@ -120,8 +120,6 @@ namespace FaceExchanger.ViewModel
         #endregion
 
 
-
-        //        private CancellationTokenSource cameraTask = new CancellationTokenSource();
         private FileManager movieTask = new FileManager();
         private bool IsFirst = true;
 
@@ -245,12 +243,10 @@ namespace FaceExchanger.ViewModel
         {
             try
             {
-                using (var img = FileManager.OpenImageFile())
-                {
+                var img = FileManager.OpenImageFile();
                     if (img == null)
                         return;
                     App.PutImage = img;
-                }
             }
             catch (Exception ex)
             {

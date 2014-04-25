@@ -34,23 +34,22 @@ namespace FaceExchanger.Model
 
 
         /// <summary>
-        /// 顔認識用カスケード型分類器の取得します
+        /// 顔認識用カスケード型分類器を取得します
         /// </summary>
         /// <returns></returns>
         public static CvHaarClassifierCascade GetFaceCascade()
-        {
-            //            return CvHaarClassifierCascade.FromFile("haarcascade_frontalface_default.xml");
-            return CvHaarClassifierCascade.FromFile("haarcascade_frontalface_alt.xml");
+        { 
+            return CvHaarClassifierCascade.FromFile("Cascades/haarcascade_frontalface_alt.xml");
         }
 
 
         /// <summary>
-        /// アニメ顔認識用カスケード型分類器の取得します
+        /// アニメ顔認識用カスケード型分類器を取得します
         /// </summary>
         /// <returns></returns>
         public static CvHaarClassifierCascade GetAnimeFaceCascade()
         {
-            return CvHaarClassifierCascade.FromFile("lbpcascade_animeface.xml");
+            return CvHaarClassifierCascade.FromFile("Cascades/lbpcascade_animeface.xml");
         }
 
 

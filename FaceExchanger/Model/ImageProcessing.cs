@@ -53,7 +53,7 @@ namespace FaceExchanger.Model
                                 for (int i = 0; i < img_laugh_resized.Height; ++i)
                                 {
                                     var color = img_laugh_resized[i, j];
-                                    if (img_laugh_resized[i, j].Val1 != 0) srcImg[r.Y + i, r.X + j] = color;//img_laugh_resized[i, j];
+                                    if (img_laugh_resized[i, j].Val1 != 0) srcImg[r.Y + i, r.X + j] = color;
                                 }
                             }
                         }
