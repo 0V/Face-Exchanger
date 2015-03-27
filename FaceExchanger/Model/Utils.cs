@@ -32,8 +32,6 @@ namespace FaceExchanger
             try
             {
                 WriteErrorLog(ex, comment);
-                Console.Write("\n\nPlease exit by pressing the Enter key > ");
-                Console.ReadLine();
             }
             finally
             {

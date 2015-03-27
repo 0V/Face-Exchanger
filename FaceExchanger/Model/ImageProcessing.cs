@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
+using OpenCvSharp.CPlusPlus;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
@@ -12,60 +13,127 @@ using System.Windows.Media.Imaging;
 
 namespace FaceExchanger.Model
 {
-    public class ImageProcessing
+    public class TargetDetector
     {
-        private static IplImage FaceDe(IplImage srcImg, IplImage putImg)
+        public CascadeClassifier Cascade { get; set; }
+        public Mat Mask { get; private set; }
+
+        public TargetDetector(string fileName)
         {
-            const double Scale = 1.04;
-            //            const double ScaleFactor = 1.139;
-            const double ScaleFactor = 1.3;
-            const int MinNeighbors = 2;
-            using (var smallImg = new IplImage(new CvSize(Cv.Round(srcImg.Width / Scale), Cv.Round(srcImg.Height / Scale)), BitDepth.U8, 1))
-            {
-                using (var gray = new IplImage(srcImg.Size, BitDepth.U8, 1))
-                {
-                    Cv.CvtColor(srcImg, gray, ColorConversion.BgrToGray);
-                    Cv.Resize(gray, smallImg, Interpolation.Linear);
-                    Cv.EqualizeHist(smallImg, smallImg);
-                }
+            Cascade = new CascadeClassifier(fileName);
 
-                using (var cascade = FileManager.GetFaceCascade())
-                using (var storage = new CvMemStorage())
-                {
-                    storage.Clear();
+            Scale = 1.04;
+            ScaleFactor = 1.3;
+            MinNeighbors = 2;
+        }
+        public TargetDetector(string fileName, Mat mask)
+        {
+            Cascade = new CascadeClassifier(fileName);
+            SetMask(mask);
 
-                    var faces = Cv.HaarDetectObjects(smallImg, cascade, storage, ScaleFactor, MinNeighbors, 0, new CvSize(50, 50));
-
-                    for (int d = 0; d < faces.Total; d++)
-                    {
-                        var r = faces[d].Value.Rect;
-                        r.Y -= 10;
-                        var size = new CvSize(r.Width + 30, r.Height + 30);
-                        using (var img_laugh_resized = new IplImage(size, putImg.Depth, putImg.NChannels))
-                        {
-                            Cv.Resize(putImg, img_laugh_resized, Interpolation.NearestNeighbor);
-
-                            int i_max = (((r.X + img_laugh_resized.Width) > srcImg.Width) ? srcImg.Width - r.X : img_laugh_resized.Width);
-                            int j_max = (((r.Y + img_laugh_resized.Height) > srcImg.Height) ? srcImg.Height - r.Y : img_laugh_resized.Height);
-
-                            for (int j = 0; j < img_laugh_resized.Width; ++j)
-                            {
-                                for (int i = 0; i < img_laugh_resized.Height; ++i)
-                                {
-                                    var color = img_laugh_resized[i, j];
-                                    if (img_laugh_resized[i, j].Val1 != 0) srcImg[r.Y + i, r.X + j] = color;
-                                }
-                            }
-                        }
-                    }
-                    return srcImg;
-                }
-            }
+            Scale = 1.04;
+            ScaleFactor = 1.3;
+            MinNeighbors = 2;
         }
 
-        private static IplImage FaceRect(IplImage srcImg)
+        public void SetMask(Mat mask)
         {
-            using (var cascade = App.FaceCascade)
+            Mask = mask;
+            /*
+            var mat4 = new MatOfInt4(mask);
+            var indexer = mat4.GetIndexer();
+
+            for (int y = 0; y < mask.Height; y++)
+            {
+                for (int x = 0; x < mask.Width; x++)
+                {
+                    var color = indexer[y, x];
+
+                    // color[3]: alpha channel
+                    if ((color[0] == 0 && color[1] == 0 && color[2] == 0) || color[3] == 255)
+                    {
+                        color[0] = 0;
+                        color[1] = 0;
+                        color[2] = 0;
+                        indexer[y, x] = color;
+                    }
+                }
+            }
+
+            Mask = mat4;*/
+        }
+
+        public double Scale { get; set; }
+        public double ScaleFactor { get; set; }
+        public int MinNeighbors { get; set; }
+
+
+        public Mat PutMaskOnFace(Mat srcMat)
+        {
+            return PutMaskOnFace(srcMat, Mask);
+        }
+
+        public Mat PutMaskOnFace(Mat srcMat, Mat putMat)
+        {
+            var grayMat = new Mat();
+            Cv2.CvtColor(srcMat, grayMat, ColorConversion.BgrToGray);
+            Cv2.EqualizeHist(grayMat, grayMat);
+
+            var faces = Cascade.DetectMultiScale(grayMat);
+
+            if (faces == null) return srcMat;
+
+            var srcMat3 = new MatOfByte3(srcMat);
+            var indexerSrc = srcMat3.GetIndexer();
+
+            Console.WriteLine(srcMat3.Rows);
+            Console.WriteLine(srcMat3.Cols);
+            Console.WriteLine(srcMat3.Width);
+            Console.WriteLine(srcMat3.Height);
+
+            for (int i = 0; i < srcMat3.Height; i++)
+            {
+                for (int j = 0; j < srcMat3.Width; j++)
+                {
+                    var a = indexerSrc[i, j];
+                }
+
+            }
+            var resizedMat = new Mat();
+
+            for (int d = 0; d < faces.Count(); d++)
+            {
+                int faceX = faces[d].X;
+                int faceY = faces[d].Y;
+                var size = new Size(faces[d].Width, faces[d].Height);
+
+                Cv2.Resize(putMat.Clone(), resizedMat, size);
+
+                var mat3 = new MatOfByte3(resizedMat);
+                var indexer = mat3.GetIndexer();
+
+                int xMax = (((faceX +  resizedMat.Width) > srcMat.Width) ? (faceX  + resizedMat.Width) - srcMat.Width : resizedMat.Width);
+                int yMax = (((faceY +  resizedMat.Height) > srcMat.Height) ? (faceY + resizedMat.Height) - srcMat.Height : resizedMat.Height);
+
+                for (int y = 0; y < xMax; ++y)
+                {
+                    for (int x = 0; x < xMax; ++x)
+                    {
+                        var color = indexer[y, x];
+                        if (color[0] != 0)
+                        {
+                            int xx = faceX + x;
+                            int yy = faceY + y;
+                            indexerSrc[yy, xx] = color;
+                        }
+                    }
+                }
+            }
+            return srcMat;
+        }
+        /*
+        private IplImage FaceRect(IplImage srcImg)
+        {
             using (var storage = Cv.CreateMemStorage(0))
             using (var face = Cv.HaarDetectObjects(srcImg, cascade, storage, 1.139, 2))
             {
@@ -81,22 +149,6 @@ namespace FaceExchanger.Model
                 }
             }
             return srcImg;
-        }
-
-        public static WriteableBitmap FaceChenge(IplImage baseImg, IplImage putImg)
-        {
-            return WriteableBitmapConverter.ToWriteableBitmap(FaceDe(baseImg, putImg));
-            
-            /*try
-            {
-                return WriteableBitmapConverter.ToWriteableBitmap(FaceDe(baseImg, putImg));
-            }
-            catch (Exception e)
-            {
-                Utils.ShowErrorMessage(e);
-                return null;
-            }*/
-        }
-
+        }*/
     }
 }

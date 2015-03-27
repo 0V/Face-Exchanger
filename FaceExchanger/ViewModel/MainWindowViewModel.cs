@@ -6,10 +6,38 @@ using OpenCvSharp.Extensions;
 using System;
 using System.Threading.Tasks;
 using System.Threading;
+using OpenCvSharp.CPlusPlus;
+
 namespace FaceExchanger.ViewModel
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        private TargetDetector detector;
+        private BackgroundVideoCapture backCapture;
+
+        public MainWindowViewModel()
+        {
+//            BasePicture = FileManager.GetDefaultFaceImage().ToWriteableBitmap();
+            detector = new TargetDetector(App.FaceCascadeName, FileManager.GetDefaultFaceImage());
+
+            backCapture = new BackgroundVideoCapture();
+            backCapture.PropertyChanged +=
+                (sender, e) =>
+                {
+                    switch (e.PropertyName)
+                    {
+                        case "CaptureImage":
+                            var b = (BackgroundVideoCapture)sender;
+                            BasePicture = b.CaptureImage;
+                            ResultPicture = detector.PutMaskOnFace(b.CaptureImageMat.Clone()).ToWriteableBitmap();
+                            break;
+                        default:
+                            break;
+                    }
+                };
+
+        }
+
         #region Properties
         private WriteableBitmap _BasePicture;
         public WriteableBitmap BasePicture
@@ -17,6 +45,9 @@ namespace FaceExchanger.ViewModel
             get { return _BasePicture; }
             set
             {
+                if (BasePicture == value)
+                    return;
+
                 _BasePicture = value;
                 OnPropertyChanged("BasePicture");
             }
@@ -28,6 +59,9 @@ namespace FaceExchanger.ViewModel
             get { return _ResultPicture; }
             set
             {
+                if (ResultPicture == value)
+                    return;
+
                 _ResultPicture = value;
                 OnPropertyChanged("ResultPicture");
             }
@@ -119,38 +153,31 @@ namespace FaceExchanger.ViewModel
         }
         #endregion
 
-
-        private FileManager movieTask = new FileManager();
-        private bool IsFirst = true;
-
         /// <summary>
         /// 画像処理を開始します
         /// </summary>
         /// <param name="paramater"></param>
         private void Start(object paramater)
         {
-            if (movieTask.IsAlive)
-            {
-                movieTask.IsAlive = false;
-            }
+
             // 画像一枚
             if (!IsMovie)
-                FileImage();
+                StartFileImage();
             // カメラからの動画
             else if (IsCamera && IsMovie)
-                CameraMovie();
+                StartCameraMovie();
             // 動画ファイル
             else
-                FileMovie();
+                StartFileMovie();
         }
 
 
         /// <summary>
         /// イメージファイルをもとに処理を開始します
         /// </summary>
-        private void FileImage()
+        private void StartFileImage()
         {
-            IplImage img;
+            Mat img;
             try
             {
                 if (IsCamera)
@@ -166,24 +193,17 @@ namespace FaceExchanger.ViewModel
                 Utils.ShowErrorMessage(e, "画像を取得できませんでした");
                 return;
             }
+
             using (var srcImg = img.Clone())
             {
                 try
                 {
                     BasePicture = img.ToWriteableBitmap();
-
-                    // 最初に一二回処理させないとちゃんと動かない
-                    if (IsFirst)
-                    {
-                        IsFirst = false;
-                        ImageProcessing.FaceChenge(srcImg.Clone(), App.PutImage);
-                        ImageProcessing.FaceChenge(srcImg.Clone(), App.PutImage);
-                    }
-                    ResultPicture = ImageProcessing.FaceChenge(srcImg, App.PutImage);
+                    ResultPicture = detector.PutMaskOnFace(srcImg).ToWriteableBitmap();
                 }
                 catch (Exception ex)
                 {
-                    Utils.ShowErrorMessage(ex, "画像を変換できませんでした。\n何度か試しても変換できない場合はこのソフトがその画像に対応していない可能性があります");
+                    Utils.ShowErrorMessage(ex, "画像を変換できませんでした。\n何度か試しても変換できない場合はその画像に対応していない可能性があります");
                 }
             }
         }
@@ -192,47 +212,18 @@ namespace FaceExchanger.ViewModel
         /// <summary>
         /// 動画ファイルをもとにを処理を開始します(未実装)
         /// </summary>
-        private void FileMovie()
+        private void StartFileMovie()
         {
+            throw new NotImplementedException();
         }
 
 
         /// <summary>
         /// カメラからのデータをもとに画像処理を開始します
         /// </summary>
-        private void CameraMovie()
+        private void StartCameraMovie()
         {
-            try
-            {
-                movieTask.GetCameraMovie((img) =>
-                {
-                    try
-                    {
-                        App.Current.Dispatcher.Invoke(() =>
-                        {
-                            try
-                            {
-                                BasePicture = img.ToWriteableBitmap();
-                            }
-                            catch { }
-                        });
-                        App.Current.Dispatcher.Invoke(() =>
-                        {
-
-                            try
-                            {
-                                ResultPicture = ImageProcessing.FaceChenge(img, App.PutImage); 
-                            }
-                            catch { }
-                        });
-                    }
-                    catch { }
-                });
-            }
-            catch (AggregateException e)
-            {
-                Utils.ShowErrorMessage(e);
-            }
+            backCapture.Start(0);
         }
 
 
@@ -244,9 +235,9 @@ namespace FaceExchanger.ViewModel
             try
             {
                 var img = FileManager.OpenImageFile();
-                    if (img == null)
-                        return;
-                    App.PutImage = img;
+                if (img == null)
+                    return;
+                detector.SetMask(img);
             }
             catch (Exception ex)
             {

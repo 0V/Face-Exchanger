@@ -7,109 +7,73 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Threading;
+using OpenCvSharp.CPlusPlus;
+
 namespace FaceExchanger.Model
 {
-    public class FileManager
+    public static class FileManager
     {
         /// <summary>
         /// リソースファイルから例のシェフの顔画像を取得します
         /// </summary>
         /// <returns></returns>
-        public static IplImage GetFaceImage()
+        public static Mat GetDefaultFaceImage()
         {
             var res = Resources.kawagoe503b01;
-            return BitmapConverter.ToIplImage(res);
+            return res.ToMat();
         }
-
 
         /// <summary>
         /// カメラから画像を取得します
         /// </summary>
         /// <param name="cameraIndex"></param>
         /// <returns></returns>
-        public static IplImage GetCameraImage(int cameraIndex = 0)
+        public static Mat GetCameraImage(int cameraIndex = 0)
         {
-            return Cv.CreateCameraCapture(cameraIndex).QueryFrame();
+            var frame = new Mat();
+            using (var capture = new VideoCapture(0))
+                capture.Read(frame);
+
+            return frame;
         }
-
-
-        /// <summary>
-        /// 顔認識用カスケード型分類器を取得します
-        /// </summary>
-        /// <returns></returns>
-        public static CvHaarClassifierCascade GetFaceCascade()
-        { 
-            return CvHaarClassifierCascade.FromFile("Cascades/haarcascade_frontalface_alt.xml");
-        }
-
-
-        /// <summary>
-        /// アニメ顔認識用カスケード型分類器を取得します
-        /// </summary>
-        /// <returns></returns>
-        public static CvHaarClassifierCascade GetAnimeFaceCascade()
-        {
-            return CvHaarClassifierCascade.FromFile("Cascades/lbpcascade_animeface.xml");
-        }
-
 
         /// <summary>
         /// 指定したイメージファイルを取得します
         /// </summary>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public static IplImage OpenImageFile(LoadMode flags = LoadMode.AnyColor)
+        public static Mat OpenImageFile(LoadMode flags = LoadMode.AnyColor)
         {
-            var openfile = new OpenFileDialog();
-            openfile.Filter =
-                "イメージファイル(*.bmp;*.png;*.jpg;*.jpeg)|*.bmp;*.png;*.jpg;*.jpeg|すべてのファイル(*.*)|*.*";
-            if (openfile.ShowDialog() != DialogResult.OK)
-                return null;
-
-            return new IplImage(openfile.FileName, flags);
-            
-            /*if (openfile.ShowDialog() != DialogResult.OK)
-                return null;
-            try
+            using (var openfile = new OpenFileDialog())
             {
-                return new IplImage(openfile.FileName, flags);
+                openfile.Filter =
+                    "イメージファイル(*.bmp;*.png;*.jpg;*.jpeg)|*.bmp;*.png;*.jpg;*.jpeg|すべてのファイル(*.*)|*.*";
+
+                if (openfile.ShowDialog() != DialogResult.OK)
+                    return null;
+
+                return Cv2.ImRead(openfile.FileName, flags);
             }
-            catch
-            {
-                return null;
-            }*/
         }
 
-
-        private bool _IsAlive = false;
-        public bool IsAlive
+        public static void SaveImageFile(Mat saveMat)
         {
-            get { return _IsAlive; }
-            set { _IsAlive = value; }
-        }
-
-        /// <summary>
-        /// カメラから映像を取得します
-        /// </summary>
-        /// <param name="write"></param>
-        /// <param name="interval">option</param>
-        /// <param name="cameraIndex">option</param>
-        /// <returns></returns>
-        public Task GetCameraMovie(Action<IplImage> write,int interval = 0,int cameraIndex = 0)
-        {
-            IsAlive = true;
-            return Task.Factory.StartNew(() =>
+            using (var sfd = new SaveFileDialog()
             {
-                using (var capture = Cv.CreateCameraCapture(cameraIndex))
+                FileName = "新しいファイル.html",
+                Filter = "JPEG ファイル(*.jpg;*.png)|*.jpg;*.png|すべてのファイル(*.*)|*.*",
+                FilterIndex = 2,
+                RestoreDirectory = true,
+            })
+            {
+                if (sfd.ShowDialog() == DialogResult.OK)
                 {
-                    var wb = new WriteableBitmap(capture.FrameWidth, capture.FrameHeight, 96, 96, PixelFormats.Bgr24, null);
-                    while (IsAlive)
+                    if (!saveMat.SaveImage(sfd.FileName))
                     {
-                        write(capture.QueryFrame());
-                        System.Threading.Thread.Sleep(interval); 
+                        Utils.ShowErrorMessage("ファイルを保存できませんでした。");
                     }
                 }
-            });
+            }
         }
     }
 }
