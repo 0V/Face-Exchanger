@@ -25,7 +25,7 @@
             <GradientStop Color="#FE636262" Offset="0.454"/>
         </LinearGradientBrush>
     </Window.Background>
-    
+
     <Window.Resources>
         <ResourceDictionary Source="StyleDictionary.xaml"/>
     </Window.Resources>
@@ -60,7 +60,14 @@
                 <ImageBrush ImageSource="{Binding ResultPicture}"/>
             </Border.Background>
         </Border>
-        <Button Grid.Column="1" Grid.Row="0" Content="Let's Chenge!!" Command="{Binding StartCommand}" Style="{StaticResource StartButtonStyle}" ToolTip="画像処理を開始"/>
+        <Grid Grid.Column="1" Grid.Row="0" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <Button Content="Save" Grid.Row="0" Command="{Binding SaveCommand}" Style="{StaticResource StartButtonStyle}" ToolTip="画像を保存"/>
+            <Button Content="Start" Grid.Row="0" Grid.Column="1" Command="{Binding StartCommand}" Style="{StaticResource StartButtonStyle}" ToolTip="画像処理を開始" />
+        </Grid>
         <!--Label Padding="20" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Foreground="White" FontFamily="HGSSoeiKakupoptai">KAWAGOE☆COOKING</-->
         <Label Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Foreground="White" FontFamily="HGSSoeiKakupoptai">BEFORE</Label>
         <Label Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Foreground="White" FontFamily="HGSSoeiKakupoptai">AFTER</Label>

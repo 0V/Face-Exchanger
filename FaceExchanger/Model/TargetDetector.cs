@@ -86,11 +86,6 @@ namespace FaceExchanger.Model
             var srcMat3 = new MatOfByte3(srcMat);
             var indexerSrc = srcMat3.GetIndexer();
 
-            Console.WriteLine(srcMat3.Rows);
-            Console.WriteLine(srcMat3.Cols);
-            Console.WriteLine(srcMat3.Width);
-            Console.WriteLine(srcMat3.Height);
-
             for (int i = 0; i < srcMat3.Height; i++)
             {
                 for (int j = 0; j < srcMat3.Width; j++)
@@ -131,24 +126,5 @@ namespace FaceExchanger.Model
             }
             return srcMat;
         }
-        /*
-        private IplImage FaceRect(IplImage srcImg)
-        {
-            using (var storage = Cv.CreateMemStorage(0))
-            using (var face = Cv.HaarDetectObjects(srcImg, cascade, storage, 1.139, 2))
-            {
-                for (int i = 0; i < face.Total; i++)
-                {
-                    var faceRect = Cv.GetSeqElem<CvRect>(face, i);
-                    Cv.Rectangle(srcImg,
-                        Cv.Point(faceRect.Value.X, faceRect.Value.Y),
-                        //                    Cv.Point(faceRect.Value.X + faceRect.Value.Width, faceRect.Value.Y + faceRect.Value.Height),
-                        Cv.Point(faceRect.Value.X + faceRect.Value.Width + 10, faceRect.Value.Y + faceRect.Value.Height + 20),
-                        Cv.RGB(255, 0, 0),
-                        3, Cv.AA);
-                }
-            }
-            return srcImg;
-        }*/
     }
 }

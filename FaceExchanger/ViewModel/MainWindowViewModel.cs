@@ -122,6 +122,16 @@ namespace FaceExchanger.ViewModel
             set { _StartCommand = value; }
         }
 
+        private RelayCommand _SaveCommand;
+        public RelayCommand SaveCommand
+        {
+            get
+            {
+                return _SaveCommand ?? (_SaveCommand = new RelayCommand(Save, _ => ResultPicture != null));
+            }
+            set { _SaveCommand = value; }
+        }
+
         private RelayCommand _SetFaceCommand;
         public RelayCommand SetFaceCommand
         {
@@ -224,6 +234,11 @@ namespace FaceExchanger.ViewModel
         private void StartCameraMovie()
         {
             backCapture.Start(0);
+        }
+
+        private void Save(object paramater)
+        {
+            FileManager.SaveImageFile(ResultPicture.ToMat());
         }
 
 

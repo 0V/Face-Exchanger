@@ -62,7 +62,7 @@ namespace FaceExchanger.Model
             {
                 FileName = "新しいファイル.html",
                 Filter = "JPEG ファイル(*.jpg;*.png)|*.jpg;*.png|すべてのファイル(*.*)|*.*",
-                FilterIndex = 2,
+                FilterIndex = 1,
                 RestoreDirectory = true,
             })
             {
