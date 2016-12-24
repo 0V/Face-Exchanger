@@ -6,7 +6,6 @@ using OpenCvSharp.Extensions;
 using System;
 using System.Threading.Tasks;
 using System.Threading;
-using OpenCvSharp.CPlusPlus;
 
 namespace FaceExchanger.ViewModel
 {

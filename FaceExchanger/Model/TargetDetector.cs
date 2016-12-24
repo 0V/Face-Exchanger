@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenCvSharp;
 using OpenCvSharp.Extensions;
-using OpenCvSharp.CPlusPlus;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Windows.Media.Imaging;
@@ -76,7 +75,7 @@ namespace FaceExchanger.Model
         public Mat PutMaskOnFace(Mat srcMat, Mat putMat)
         {
             var grayMat = new Mat();
-            Cv2.CvtColor(srcMat, grayMat, ColorConversion.BgrToGray);
+            Cv2.CvtColor(srcMat, grayMat, ColorConversionCodes.BGR2GRAY);
             Cv2.EqualizeHist(grayMat, grayMat);
 
             var faces = Cascade.DetectMultiScale(grayMat);
@@ -107,8 +106,8 @@ namespace FaceExchanger.Model
                 var mat3 = new MatOfByte3(resizedMat);
                 var indexer = mat3.GetIndexer();
 
-                int xMax = (((faceX +  resizedMat.Width) > srcMat.Width) ? (faceX  + resizedMat.Width) - srcMat.Width : resizedMat.Width);
-                int yMax = (((faceY +  resizedMat.Height) > srcMat.Height) ? (faceY + resizedMat.Height) - srcMat.Height : resizedMat.Height);
+                int xMax = (((faceX + resizedMat.Width) > srcMat.Width) ? (faceX + resizedMat.Width) - srcMat.Width : resizedMat.Width);
+                int yMax = (((faceY + resizedMat.Height) > srcMat.Height) ? (faceY + resizedMat.Height) - srcMat.Height : resizedMat.Height);
 
                 for (int y = 0; y < xMax; ++y)
                 {
@@ -126,5 +125,6 @@ namespace FaceExchanger.Model
             }
             return srcMat;
         }
+
     }
 }

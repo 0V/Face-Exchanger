@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Threading;
-using OpenCvSharp.CPlusPlus;
 
 namespace FaceExchanger.Model
 {
@@ -42,7 +41,7 @@ namespace FaceExchanger.Model
         /// </summary>
         /// <param name="flags"></param>
         /// <returns></returns>
-        public static Mat OpenImageFile(LoadMode flags = LoadMode.AnyColor)
+        public static Mat OpenImageFile(ImreadModes flags = ImreadModes.AnyColor)
         {
             using (var openfile = new OpenFileDialog())
             {

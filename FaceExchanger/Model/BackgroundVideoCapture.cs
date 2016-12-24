@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
-using OpenCvSharp.CPlusPlus;
 using OpenCvSharp.Extensions;
 using System.ComponentModel;
 using System.Threading;
+using OpenCvSharp;
 
 namespace FaceExchanger.Model
 {
