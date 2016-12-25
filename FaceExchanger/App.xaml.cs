@@ -17,6 +17,8 @@ namespace FaceExchanger
     {
         public const string FaceCascadeName = "Cascades/haarcascade_frontalface_alt.xml";
         public const string AnimeFaceCascadeName = "Cascades/lbpcascade_animeface.xml";
+        public const string EyeCascadeName = "Cascades/haarcascade_eye.xml";
+        public const string EyeGlassCascadeName = "Cascades/haarcascade_eye_tree_eyeglasses.xml";
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {

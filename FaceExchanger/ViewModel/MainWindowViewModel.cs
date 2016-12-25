@@ -17,7 +17,7 @@ namespace FaceExchanger.ViewModel
         public MainWindowViewModel()
         {
 //            BasePicture = FileManager.GetDefaultFaceImage().ToWriteableBitmap();
-            detector = new TargetDetector(App.FaceCascadeName, FileManager.GetDefaultFaceImage());
+            detector = new TargetDetector(FileManager.GetDefaultFaceImage());
 
             backCapture = new BackgroundVideoCapture();
             backCapture.PropertyChanged +=
