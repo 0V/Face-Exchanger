@@ -172,6 +172,7 @@ namespace FaceExchanger.Model
                 Mat put0 = putMat.Resize(new Size(width, heigh), 0, 0, InterpolationFlags.Lanczos4);
 
                 //真ん中編の色を適当に抽出
+                // 改良の余地あり（肌色領域の平均取ったり？）
                 MatOfByte3 mat3 = new MatOfByte3(put0); // cv::Mat_<cv::Vec3b>
                 var indexer = mat3.GetIndexer();
                 Vec3b color = indexer[(int)(put0.Width * 0.5), (int)(put0.Height * 0.5)];
@@ -187,13 +188,10 @@ namespace FaceExchanger.Model
 
                 //中心はここ
                 var center = new Point(faces[d].X + faces[d].Width * 0.5, faces[d].Y + faces[d].Height * 0.5);
-                var output = new Mat();
-                Cv2.SeamlessClone(put1, srcMat, mask, center, output, SeamlessCloneMethods.NormalClone);
-                return output;
+                Cv2.SeamlessClone(put1, srcMat, mask, center, srcMat, SeamlessCloneMethods.NormalClone);
             }
-
-
             return srcMat;
         }
+
     }
 }
