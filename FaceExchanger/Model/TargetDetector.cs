@@ -67,67 +67,23 @@ namespace FaceExchanger.Model
         public int MinNeighbors { get; set; }
 
 
+        /// <summary>
+        /// Poisson Image Editing
+        /// </summary>
+        /// <param name="srcMat">顔がある方</param>
+        /// <returns></returns>
         public Mat PutMaskOnFace(Mat srcMat)
         {
             return PutMaskOnFace(srcMat, Mask);
         }
 
-        public Mat PutMaskOnFace__(Mat srcMat, Mat putMat)
-        {
-            var grayMat = new Mat();
-            Cv2.CvtColor(srcMat, grayMat, ColorConversionCodes.BGR2GRAY);
-            Cv2.EqualizeHist(grayMat, grayMat);
-
-            var faces = Cascade.DetectMultiScale(grayMat);
-
-            if (faces == null) return srcMat;
-
-            var srcMat3 = new MatOfByte3(srcMat);
-            var indexerSrc = srcMat3.GetIndexer();
-
-            for (int i = 0; i < srcMat3.Height; i++)
-            {
-                for (int j = 0; j < srcMat3.Width; j++)
-                {
-                    var a = indexerSrc[i, j];
-                }
-
-            }
-            var resizedMat = new Mat();
-
-            for (int d = 0; d < faces.Count(); d++)
-            {
-                int faceX = faces[d].X;
-                int faceY = faces[d].Y;
-                var size = new Size(faces[d].Width, faces[d].Height);
-
-                Cv2.Resize(putMat.Clone(), resizedMat, size);
-
-                var mat3 = new MatOfByte3(resizedMat);
-                var indexer = mat3.GetIndexer();
-
-                int xMax = (((faceX + resizedMat.Width) > srcMat.Width) ? (faceX + resizedMat.Width) - srcMat.Width : resizedMat.Width);
-                int yMax = (((faceY + resizedMat.Height) > srcMat.Height) ? (faceY + resizedMat.Height) - srcMat.Height : resizedMat.Height);
-
-                for (int y = 0; y < xMax; ++y)
-                {
-                    for (int x = 0; x < xMax; ++x)
-                    {
-                        var color = indexer[y, x];
-                        if (color[0] != 0)
-                        {
-                            int xx = faceX + x;
-                            int yy = faceY + y;
-                            indexerSrc[yy, xx] = color;
-                        }
-                    }
-                }
-            }
-            return srcMat;
-        }
-
-
-        public Mat PutMaskOnFace/*Poisson*/(Mat srcMat, Mat putMat)
+        /// <summary>
+        /// Poisson Image Editing
+        /// </summary>
+        /// <param name="srcMat">顔がある方</param>
+        /// <param name="putMat">重ねる顔</param>
+        /// <returns></returns>
+        public Mat PutMaskOnFace(Mat srcMat, Mat putMat)
         {
             var grayMat = new Mat();
             Cv2.CvtColor(srcMat, grayMat, ColorConversionCodes.BGR2GRAY);
@@ -192,6 +148,5 @@ namespace FaceExchanger.Model
             }
             return srcMat;
         }
-
     }
 }

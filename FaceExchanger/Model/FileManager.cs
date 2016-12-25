@@ -13,12 +13,12 @@ namespace FaceExchanger.Model
     public static class FileManager
     {
         /// <summary>
-        /// リソースファイルから例のシェフの顔画像を取得します
+        /// リソースファイルからデフォルトの顔画像を取得します
         /// </summary>
         /// <returns></returns>
         public static Mat GetDefaultFaceImage()
         {
-            var res = Resources.kawagoe503b01;
+            var res = Resources.gorilla_face01;
             return res.ToMat();
         }
 
