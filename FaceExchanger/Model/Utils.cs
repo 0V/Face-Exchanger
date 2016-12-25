@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 namespace FaceExchanger
@@ -146,7 +148,7 @@ namespace FaceExchanger
             MessageBox.Show("エラーが発生しました\n" + e.Message, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        public static void ShowErrorMessage(Exception e,string message)
+        public static void ShowErrorMessage(Exception e, string message)
         {
             MessageBox.Show("エラーが発生しました\n" + message + "\n" + e.Message, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
         }
@@ -154,6 +156,20 @@ namespace FaceExchanger
         public static void ShowMessage(string message, string window = "メッセージ")
         {
             MessageBox.Show(message, window, MessageBoxButton.OK);
+        }
+    }
+
+
+    public static class IEnumerableExtensions
+    {
+        /// <summary>
+        /// 最大値を持つ要素を返します
+        /// </summary>
+        public static TSource FindMax<TSource, TResult>(
+        this IEnumerable<TSource> self,
+        Func<TSource, TResult> selector)
+        {
+            return self.First(c => selector(c).Equals(self.Max(selector)));
         }
     }
 }
