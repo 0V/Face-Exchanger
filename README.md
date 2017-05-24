@@ -1,6 +1,9 @@
 Face-Exchanger
 ==============
 
+顔を自動で認識して、別の画像をスムーズに合成するソフトウェアです。  
+作成の経緯やデモ、技術的な内容は 「[G2's Forest – 顔を別の画像に自動で置き換えるやつ作ってみた](http://blog.mohyo.net/2016/12/1817/)」 にまとめてあります。
+
 ## ダウンロード
 クリックするとダウンロードが開始されます。
 [Download](https://github.com/0V/Face-Exchanger/releases/download/0.2.0/FaceExchanger0.2.0.zip)
